@@ -42,10 +42,7 @@ u1=u;%copy of the input signal
 numerator=[b1 b2];
 denomi=[1 a1 a2];
 yestimate=dlsim(numerator,denomi,u1);%simulation of a discrete linear system to calculate Y estimated
-
-%%
-corre_value= correlate_signals(y',yestimate);%%calculate the correlation between the 2 signals, the higher the value the
-%more correlated or similar the signals are.
+corre_value= correlate_signals(y',yestimate);
 str=sprintf('the correlation value of the signal is= %f', corre_value);
 %%plot the results.
 figure;
@@ -55,7 +52,8 @@ plot(y,'b');
 grid on;
 xlabel('samples number');
 ylabel('System Response');
-dim = [0.2 0.6 0.3 0.3];
-annotation('textbox',dim,'String',str,'FitBoxToText','on');
-legend('Identified Model','Orginal Model');
+legend('Identified Model','Orginal Model')
+text('Correlation :'+str )
+%calculate the correlation between the 2 signals, the higher the value the
+%more correlated or similar the signals are.
 
