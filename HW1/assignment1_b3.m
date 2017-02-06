@@ -2,7 +2,7 @@
 %% Author: Holguer A. Becerra
 %% assignment 1.
 %% Professor: Guy Dummont.
-%% RLS
+%% RLS Configurable
 
 clear
 clc

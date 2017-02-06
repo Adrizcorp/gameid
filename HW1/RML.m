@@ -2,7 +2,7 @@
 %% Author: Holguer A. Becerra
 %% assignment 1.
 %% Professor: Guy Dummont.
-%% RML
+%% RML 
 
 clear
 clc
