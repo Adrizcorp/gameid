@@ -11,8 +11,8 @@ load data2017.mat
 u=data(:,1); %System Input
 y=data(:,2); %System Output
 
-na=89;% system order
-nb=90;% system order
+na=149;% system order
+nb=150;% system order
 m=length(u);
 
 theta=zeros(1,na+nb)'; % create a zero vector for the coefficients a and b, 2 for a 2 for b
