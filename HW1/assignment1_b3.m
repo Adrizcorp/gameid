@@ -11,8 +11,8 @@ load data2017.mat
 u=data(:,1); %System Input
 y=data(:,2); %System Output
 
-na=7;% system order
-nb=7;% system order
+na=89;% system order
+nb=90;% system order
 m=length(u);
 
 theta=zeros(1,na+nb)'; % create a zero vector for the coefficients a and b, 2 for a 2 for b
@@ -57,9 +57,9 @@ denomi=[1 a];
 yestimate=dlsim(numerator,denomi,u1);%simulation of a discrete linear system to calculate Y estimated
 
 %%
-corre_value= correlate_signals(y',yestimate);%%calculate the correlation between the 2 signals, the higher the value the
+corre_value= correlate_signals(y,yestimate);%%calculate the correlation between the 2 signals, the higher the value the
 %more correlated or similar the signals are.
-str=sprintf('the correlation value of the signal is= %f', corre_value);
+str=sprintf('Correlation= %0.2f%%', corre_value);
 %%plot the results.
 figure;
 plot(yestimate,'r');

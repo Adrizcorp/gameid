@@ -53,9 +53,9 @@ denomi=[1 a];
 yestimate=dlsim(numerator,denomi,u1);%simulation of a discrete linear system to calculate Y estimated
 
 %%
-corre_value= correlate_signals(y',yestimate);%%calculate the correlation between the 2 signals, the higher the value the
+corre_value= correlate_signals(y,yestimate);%%calculate the correlation between the 2 signals, the higher the value the
 %more correlated or similar the signals are.
-str=sprintf('the correlation value of the signal is= %f', corre_value);
+str=sprintf('Correlation= %0.2f%%', corre_value);
 %%plot the results.
 figure;
 plot(yestimate,'r');
