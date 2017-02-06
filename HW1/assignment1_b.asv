@@ -60,4 +60,12 @@ dim = [0.2 0.6 0.3 0.3];
 annotation('textbox',dim,'String',str,'FitBoxToText','on');
 legend('Identified Model','Orginal Model');
 
-
+A=[1 a1 a2];
+B=[b1 b2];
+%C = [1 r1 r2];
+arx1red=idpoly(denomi,numerator);%,[1 r1 r2],1); 
+zi=iddata(y,u,2); 
+d=compare(zi,arx1red);
+hold on;
+plot(d.OutputData,'g');
+corre_value= correlate_signals(y(1;500)',d.OutputData(2:500));%%calculate the correlation between the 2 signals, the higher the value the
