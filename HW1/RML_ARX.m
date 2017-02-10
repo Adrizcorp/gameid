@@ -9,19 +9,28 @@ clc
 load data2017.mat
 
 
-na=3;% system order Ay(t)
-nb=2;% system order By(t)
+na=11;% system order Ay(t)
+nb=10;% system order By(t)
 nc=1;% system order Ce(t)
 nk=1; % delay
 
-u=detrend(data(:,1)); %System Input
-y=detrend(data(:,2)); %System Output
+u=data(:,1); %System Input
+y=data(:,2); %System Output
 
 %lenght of the SISO
 m=length(u);
 
 %% init variables for calculations
 theta=zeros(1,na+nb+nc)'; % create a zero vector for the coefficients a and b, 2 for a 2 for b
+%% ARX  model init values
+init_a=[0.1276 0.123 0.1336 0.08193 0.1259 0.0301 0.03264 -0.03727 -0.06075 0.01514];
+init_b=[1.5 -0.4166 -0.249 -0.1309 -0.1256 -0.01326 -0.1484 -0.07776 -0.1142 -0.1521];
+for ho=1;na
+    theta(ho)=init_a(ho);
+end
+for ho=1;nb
+    theta(ho+na)=init_b(ho);
+end
 
 
 alpha=1e4; %%init factor
@@ -91,103 +100,103 @@ for k=(na+nb+nc):m,%%sweeping out y
         xtf=[xtf rhat(k-order)];
     end
 
-   %% RML calculation
+    %% RML calculation
     xf=xtf';
     P=P-((P*xf*xtf*P)*inv(1+xtf*P*xf));
     K=P*xf*inv(1+xtf*P*xf);
     theta_prev=theta;
     theta=theta+K*(residual(k));
 
-%     %% save the progress of each coefficients to see the convergence, and
-%     %error.
-%     for order=1:na,
-%         coeffs_historial(order,k)=theta(order);
-%         coeffs_historial_error(order,k)=abs(coeffs_historial(order,k)-theta_prev(order));
-%     end
-%     for order=1:nb,
-%         coeffs_historial(order+na,k)=theta(order+na);
-%         coeffs_historial_error(order+na,k)=abs(coeffs_historial(order+na,k)-theta_prev(order+na));
-%     end
-% 
-%      for order=1:nc,
-%          coeffs_historial(order+nb+na,k)=theta(order+nb+na);
-%          coeffs_historial_error(order+nb+na,k)=abs(coeffs_historial(order+nb+na,k)-theta_prev(order+nb+na));
-%      end
+    %% save the progress of each coefficients to see the convergence, and
+    %error.
+    for order=1:na,
+        coeffs_historial(order,k)=theta(order);
+        coeffs_historial_error(order,k)=abs(coeffs_historial(order,k)-theta_prev(order));
+    end
+    for order=1:nb,
+        coeffs_historial(order+na,k)=theta(order+na);
+        coeffs_historial_error(order+na,k)=abs(coeffs_historial(order+na,k)-theta_prev(order+na));
+    end
+
+     for order=1:nc,
+         coeffs_historial(order+nb+na,k)=theta(order+nb+na);
+         coeffs_historial_error(order+nb+na,k)=abs(coeffs_historial(order+nb+na,k)-theta_prev(order+nb+na));
+     end
 end
 
-% %% Graph Parameters
-% texto=[];
-% figure;
-% subplot(2,2,1)
-% for order=1:(na),
-%     plot(coeffs_historial(order,:));
-%   %  texto= [texto;sprintf('a%d',order)];
-%     hold on;
-% end
-% legend(texto);
-% xlabel('k')
-% ylabel('parameter')
-% texto=[];
-% subplot(2,2,2)
-% for order=1:(nb),
-%     plot(coeffs_historial(order+na,:));
-%   %  texto= [texto;sprintf('b%d',order)];
-%     hold on;
-% end
-% legend(texto);
-% xlabel('k')
-% ylabel('parameter')
-% texto=[];
-% subplot(2,2,[3,4])
-% for order=1:(nc),
-%   plot(coeffs_historial(order+nb+na,:));
-%  % texto= [texto;sprintf('c%d',order)];
-%   hold on;
-% end
-% 
-% legend(texto);
-% xlabel('k')
-% ylabel('parameter')
-% 
-% 
-% %% GRAPH Errors
-% texto=[];
-% figure;
-% subplot(2,2,1)
-% for order=1:(na),
-%     plot(coeffs_historial_error(order,:));
-%    % texto= [texto;sprintf('a%d',order)];
-%     pointText=['min a' num2str(order) '=' num2str(coeffs_historial_error(order,m))];
-%     %text(m,coeffs_historial_error(order,m)+0.1*order,pointText,'HorizontalAlignment','right');
-%     hold on;
-% end
-% legend(texto);
-% xlabel('k')
-% ylabel('Error')
-% texto=[];
-% subplot(2,2,2)
-% for order=1:(nb),
-%     plot(coeffs_historial_error(order+na,:));
-%    % texto= [texto;sprintf('b%d',order)];
-%     pointText=['min b' num2str(order) '=' num2str(coeffs_historial_error(order+na,m))];
-%     %text(m,coeffs_historial_error(order+na,m)+0.1*order,pointText,'HorizontalAlignment','right');
-%     hold on;
-% end
-% legend(texto);
-% xlabel('k')
-% ylabel('Error')
-% texto=[];
-% subplot(2,2,[3,4])
-% for order=1:(nc),
-%  plot(coeffs_historial_error(order+nb+na,:));
-%  %texto= [texto;sprintf('c%d',order)];
-%  pointText=['min c' num2str(order) '=' num2str(coeffs_historial_error(order+na+nb,m))];
-%     %text(m,coeffs_historial_error(order+na+nb,m)+0.1*order,pointText,'HorizontalAlignment','right');
-%  hold on;
-% end
-% legend(texto);
-% xlabel('k')
-% ylabel('Error')
+%% Graph Parameters
+texto=[];
+figure;
+subplot(2,2,1)
+for order=1:(na),
+    plot(coeffs_historial(order,:));
+  %  texto= [texto;sprintf('a%d',order)];
+    hold on;
+end
+legend(texto);
+xlabel('k')
+ylabel('parameter')
+texto=[];
+subplot(2,2,2)
+for order=1:(nb),
+    plot(coeffs_historial(order+na,:));
+  %  texto= [texto;sprintf('b%d',order)];
+    hold on;
+end
+legend(texto);
+xlabel('k')
+ylabel('parameter')
+texto=[];
+subplot(2,2,[3,4])
+for order=1:(nc),
+  plot(coeffs_historial(order+nb+na,:));
+ % texto= [texto;sprintf('c%d',order)];
+  hold on;
+end
+
+legend(texto);
+xlabel('k')
+ylabel('parameter')
+
+
+%% GRAPH Errors
+texto=[];
+figure;
+subplot(2,2,1)
+for order=1:(na),
+    plot(coeffs_historial_error(order,:));
+   % texto= [texto;sprintf('a%d',order)];
+    pointText=['min a' num2str(order) '=' num2str(coeffs_historial_error(order,m))];
+    %text(m,coeffs_historial_error(order,m)+0.1*order,pointText,'HorizontalAlignment','right');
+    hold on;
+end
+legend(texto);
+xlabel('k')
+ylabel('Error')
+texto=[];
+subplot(2,2,2)
+for order=1:(nb),
+    plot(coeffs_historial_error(order+na,:));
+   % texto= [texto;sprintf('b%d',order)];
+    pointText=['min b' num2str(order) '=' num2str(coeffs_historial_error(order+na,m))];
+    %text(m,coeffs_historial_error(order+na,m)+0.1*order,pointText,'HorizontalAlignment','right');
+    hold on;
+end
+legend(texto);
+xlabel('k')
+ylabel('Error')
+texto=[];
+subplot(2,2,[3,4])
+for order=1:(nc),
+ plot(coeffs_historial_error(order+nb+na,:));
+ %texto= [texto;sprintf('c%d',order)];
+ pointText=['min c' num2str(order) '=' num2str(coeffs_historial_error(order+na+nb,m))];
+    %text(m,coeffs_historial_error(order+na+nb,m)+0.1*order,pointText,'HorizontalAlignment','right');
+ hold on;
+end
+legend(texto);
+xlabel('k')
+ylabel('Error')
 
 %% 
 %figure;

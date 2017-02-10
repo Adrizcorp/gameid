@@ -11,8 +11,10 @@ load data2017.mat
 u=data(:,1); %System Input
 y=data(:,2); %System Output
 
-n=2;% system order
+n=4;% system order
 m=length(u);
+error=0;
+error_n=1;
 
 theta=zeros(1,2*n)'; % create a zero vector for the coefficients a and b, 2 for a 2 for b
 alpha=1e4; %%init factor
@@ -23,23 +25,29 @@ lambda_inv=1/lambda; % inverse Forgetting Factor
     for k=n*2:m,%%sweeping out y
         %taking the new seeds for the coefficients estimation or observations,
         %2 samples behind
-        phit=[];
+        xt=[];
         for order=1:n,
-            phit=[phit -y(k-order)];
+            xt=[xt -y(k-order)];
         end
         for order=1:n,
-            phit=[phit u(k-order)];
+            xt=[xt u(k-order)];
         end
-        phi=phit';%this would be xT-- or x Transpose
+        x=xt';%this would be xT-- or x Transpose
         %calculating P cvariance matrix
-        P=lambda_inv*(P-(P*phi*phit*P)/(lambda+phit*P*phi));
+        P=lambda_inv*(P-(P*x*xt*P)/(lambda+xt*P*x));
         %taking the covariance matrix calculate and update the weights (Thetha, which are A(t), and B(t) coeffiecients)
-        theta=theta-P*phi*(phit*theta-y(k));
+        theta=theta-P*x*(xt*theta-y(k));
                    %____
                      %|
-                     %.-> K(t+1)=P*phi=P(t+1)*x(t+1)
+                     %.-> K(t+1)=P*x=P(t+1)*x(t+1)
+         residual=y(k)-xt*theta;
+         error=(error+residual*residual);
+         error=error*0.5;
+         error_v(error_n)=residual;
+         error_n=error_n+1;
     end
-
+figure;
+plot(error_v);
 %taking out the coeficcients
 a=[];
 b=[];
@@ -55,7 +63,7 @@ yestimate=dlsim(numerator,denomi,u1);%simulation of a discrete linear system to 
 %%
 corre_value= correlate_signals(y,yestimate);%%calculate the correlation between the 2 signals, the higher the value the
 %more correlated or similar the signals are.
-str=sprintf('Correlation= %0.2f%%', corre_value);
+str=sprintf('similarity= %f%%', corre_value);
 %%plot the results.
 figure;
 plot(yestimate,'r');

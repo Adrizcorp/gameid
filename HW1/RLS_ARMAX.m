@@ -13,21 +13,26 @@ y=data(:,2); %System Output
 
 
 %% 
-na=3;% system order for Ay
-nb=2;% system order for Bx
+na=8;% system order for Ay
+nb=8;% system order for Bx
 nk=1;% delay
 %% size of the SISO
 m=length(u);
 %% Initialize variables.
 theta=zeros(1,na+nb)'; % create a zero vector for the coefficients a and b, 2 for a 2 for b
-%% transfer function estimations to optimize
-init_a=[-0.5784 0.002871 -0.01826];
-init_b=[1.5 -1.475];
-theta(1)=init_a(1);
-theta(2)=init_a(2);
-theta(3)=init_a(3);
-theta(4)=init_b(1);
-theta(5)=init_b(2);
+%% ARMAX model init values
+init_a=[0.7345 0.0204 0.03946 -0.01836 0.06867 -0.04931 -0.00753 0.002706];
+init_b=[1.501 -1.71 0.1202 0.1247 -0.02498 0.1038 -0.1159 0.002782];
+init_c=[- 0.9167];
+for ho=1;na
+    theta(ho)=init_a(ho);
+end
+for ho=1;nb
+    theta(ho+na)=init_b(ho);
+end
+% for ho=1;nc
+%     theta(ho+na+nb)=init_c(ho);
+% end
 
 alpha=1e4; %%init factor
 P=alpha*eye(na+nb); % Covariance Matrix
@@ -86,7 +91,7 @@ figure;
 subplot(2,2,[1,2])
 for order=1:(na),
     plot(coeffs_historial(order,:));
-    texto= [texto;sprintf('a%d',order)];
+    %texto= [texto;sprintf('a%d',order)];
     hold on;
 end
 legend(texto);
@@ -96,7 +101,7 @@ texto=[];
 subplot(2,2,[3,4])
 for order=1:(nb),
     plot(coeffs_historial(order+na,:));
-    texto= [texto;sprintf('b%d',order)];
+   % texto= [texto;sprintf('b%d',order)];
     hold on;
 end
 legend(texto);
@@ -110,7 +115,7 @@ figure;
 subplot(2,2,[1,2])
 for order=1:(na),
     plot(coeffs_historial_error(order,:));
-    texto= [texto;sprintf('a%d',order)];
+    %texto= [texto;sprintf('a%d',order)];
     pointText=['min a' num2str(order) '=' num2str(coeffs_historial_error(order,m))];
     %text(m,coeffs_historial_error(order,m)+0.1*order,pointText,'HorizontalAlignment','right');
     hold on;
@@ -123,7 +128,7 @@ texto=[];
 subplot(2,2,[3,4])
 for order=1:(nb),
     plot(coeffs_historial_error(order+na,:));
-    texto= [texto;sprintf('b%d',order)];
+    %texto= [texto;sprintf('b%d',order)];
     pointText=['min b' num2str(order) '=' num2str(coeffs_historial_error(order+na,m))];
     %text(m,coeffs_historial_error(order+na,m)+0.1*order,pointText,'HorizontalAlignment','right');
     hold on;

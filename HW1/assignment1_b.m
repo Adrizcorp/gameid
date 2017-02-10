@@ -2,7 +2,7 @@
 %% Author: Holguer A. Becerra
 %% assignment 1.
 %% Professor: Guy Dummont.
-%% RLS
+%% RLS Second order a and b
 
 clear
 clc
@@ -23,15 +23,15 @@ lambda_inv=1/lambda; % inverse Forgetting Factor
     for k=3:m,%%sweeping out y
         %taking the new seeds for the coefficients estimation or observations,
         %2 samples behind
-        phit=[-y(k-1) -y(k-2) u(k-1) u(k-2)];
-        phi=phit';%this would be xT-- or x Transpose
+        xt=[-y(k-1) -y(k-2) u(k-1) u(k-2)];
+        x=xt';%this would be xT-- or x Transpose
         %calculating P cvariance matrix
-        P=lambda_inv*(P-(P*phi*phit*P)/(lambda+phit*P*phi));
+        P=lambda_inv*(P-(P*x*xt*P)/(lambda+xt*P*x));
         %taking the covariance matrix calculate and update the weights (Thetha, which are A(t), and B(t) coeffiecients)
-        theta=theta-P*phi*(phit*theta-y(k));
+        theta=theta-P*x*(xt*theta-y(k));
                    %____
                      %|
-                     %.-> K(t+1)=P*phi=P(t+1)*x(t+1)
+                     %.-> K(t+1)=P*x=P(t+1)*x(t+1)
     end
 
 %taking out the coeficcients
@@ -45,9 +45,9 @@ denomi=[1 a1 a2];
 yestimate=dlsim(numerator,denomi,u1);%simulation of a discrete linear system to calculate Y estimated
 
 %%
-corre_value= correlate_signals(y',yestimate);%%calculate the correlation between the 2 signals, the higher the value the
+corre_value= correlate_signals(y,yestimate);%%calculate the correlation between the 2 signals, the higher the value the
 %more correlated or similar the signals are.
-str=sprintf('the correlation value of the signal is= %f', corre_value);
+str=sprintf('similarity= %f%%', corre_value);
 %%plot the results.
 figure;
 plot(yestimate,'r');

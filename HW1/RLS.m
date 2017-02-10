@@ -8,8 +8,8 @@ clear
 clc
 load data2017.mat
 
-u=data(:,1); %System Input
-y=data(:,2); %System Output
+u=detrend(data(:,1)); %System Input
+y=detrend(data(:,2)); %System Output
 
 
 %% 
@@ -20,14 +20,7 @@ nk=1;% delay
 m=length(u);
 %% Initialize variables.
 theta=zeros(1,na+nb)'; % create a zero vector for the coefficients a and b, 2 for a 2 for b
-%% transfer function estimations to optimize
-init_a=[-0.5784 0.002871 -0.01826];
-init_b=[1.5 -1.475];
-theta(1)=init_a(1);
-theta(2)=init_a(2);
-theta(3)=init_a(3);
-theta(4)=init_b(1);
-theta(5)=init_b(2);
+
 
 alpha=1e4; %%init factor
 P=alpha*eye(na+nb); % Covariance Matrix
